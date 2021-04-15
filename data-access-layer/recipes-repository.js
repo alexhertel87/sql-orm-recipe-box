@@ -40,8 +40,6 @@ async function getTenNewestRecipes() {
     ],
     limit: 10
   });
-  // console.log(JSON.stringify(recipe, null, 2));
-
   return recipe;
 }
 
@@ -64,18 +62,19 @@ async function getTenNewestRecipes() {
 async function getRecipeById(id) {
   const recipes = await Recipe.findByPk(id, {
     include: [
-      Recipe,
+      Instruction,
       {
         model: Ingredient,
-        include: [{ MeasurementUnit }]
+        include: [ MeasurementUnit ]
       }
     ]
   })
+  return recipes;
+  }
 // console.log(recipes.toJson())
 
 // await sequelize.close();/
-}
-getRecipeById();
+
 /*
 Use the findByPk method of the Recipe object to return the recipe.Use
 nested eager loading to load the associated instructions, ingredients, and
@@ -114,26 +113,41 @@ Model.findByPk(id, {
 //       https://sequelize.org/v5/manual/models-usage.html#nested-eager-loading
 
 
+// Use the findByPk method of the Recipe object to get the object and, then,
+// destroy it. Or, use the Model.destroy({ ... where ... }) method that you
+// saw in the video.
+//
+// Docs: https://sequelize.org/master/class/lib/model.js~Model.html#instance-method-destroy
 async function deleteRecipe(id) {
-  // Use the findByPk method of the Recipe object to get the object and, then,
-  // destroy it. Or, use the Model.destroy({ ... where ... }) method that you
-  // saw in the video.
-  //
-  // Docs: https://sequelize.org/master/class/lib/model.js~Model.html#instance-method-destroy
+  const recipeRow = await Recipe.findByPk(id);
+  await recipeRow.destroy({
+    truncate: true,
+    cascade: true,
+  })
 }
 
+// Use the create method of the Recipe object to create a new object and
+// return it.
+//
+// Docs: https://sequelize.org/v5/manual/instances.html#creating-persistent-instances
 async function createNewRecipe(title) {
-  // Use the create method of the Recipe object to create a new object and
-  // return it.
-  //
-  // Docs: https://sequelize.org/v5/manual/instances.html#creating-persistent-instances
+  return await Recipe.create({
+    title
+  })
 }
 
+// Use the findAll method of the Recipe object to search for recipes with the
+// given term in its title
+//
+// Docs: https://sequelize.org/v5/manual/querying.html
 async function searchRecipes(term) {
-  // Use the findAll method of the Recipe object to search for recipes with the
-  // given term in its title
-  //
-  // Docs: https://sequelize.org/v5/manual/querying.html
+  return await Recipe.findAll({
+    where: {
+      title: {
+        [Op.iLike]: term,
+      }
+    }
+  })
 }
 
 
