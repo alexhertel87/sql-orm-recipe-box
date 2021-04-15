@@ -36,13 +36,13 @@ try {
 async function getTenNewestRecipes() {
   const recipe = await Recipe.findAll({
     order: [
-      ["id", DESC]
+      ["id", "DESC"]
     ],
     limit: 10
   });
-  console.log(JSON.stringify(recipe, null, 2));
+  // console.log(JSON.stringify(recipe, null, 2));
 
-  await sequelize.close();
+  return recipe;
 }
 
 // Use the findAll method of the Recipe object to return the recipes.
@@ -71,7 +71,9 @@ async function getRecipeById(id) {
       }
     ]
   })
-await sequelize.close();
+// console.log(recipes.toJson())
+
+// await sequelize.close();/
 }
 getRecipeById();
 /*
